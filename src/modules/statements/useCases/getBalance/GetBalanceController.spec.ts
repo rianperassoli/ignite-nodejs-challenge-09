@@ -75,8 +75,6 @@ describe("Get Balance Controller", () => {
       Authorization: `Bearer ${token}`,
     });
 
-    console.log(response.body);
-
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('balance');
     expect(response.body).toHaveProperty('statement');
