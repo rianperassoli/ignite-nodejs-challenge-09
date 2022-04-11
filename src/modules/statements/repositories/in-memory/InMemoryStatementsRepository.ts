@@ -1,4 +1,5 @@
-import { Statement } from "../../entities/Statement";
+import { ICreateTransferDTO } from "modules/statements/useCases/createTransfer/ICreateTransferDTO";
+import { OperationType, Statement } from "../../entities/Statement";
 import { ICreateStatementDTO } from "../../useCases/createStatement/ICreateStatementDTO";
 import { IGetBalanceDTO } from "../../useCases/getBalance/IGetBalanceDTO";
 import { IGetStatementOperationDTO } from "../../useCases/getStatementOperation/IGetStatementOperationDTO";
@@ -32,10 +33,10 @@ export class InMemoryStatementsRepository implements IStatementsRepository {
     const statement = this.statements.filter(operation => operation.user_id === user_id);
 
     const balance = statement.reduce((acc, operation) => {
-      if (operation.type === 'deposit') {
-        return acc + operation.amount;
-      } else {
+      if (operation.type === OperationType.WITHDRAW) {
         return acc - operation.amount;
+      } else {
+        return acc + operation.amount;
       }
     }, 0)
 
@@ -47,5 +48,15 @@ export class InMemoryStatementsRepository implements IStatementsRepository {
     }
 
     return { balance }
+  }
+
+  async createTransfer (data: ICreateTransferDTO): Promise<Statement> {
+    const statement = new Statement();
+
+    Object.assign(statement, data);
+
+    this.statements.push(statement);
+
+    return statement;
   }
 }
